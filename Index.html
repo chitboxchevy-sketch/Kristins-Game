@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Kristen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300;500;700&family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink: #ffafcc;
+            --purple: #cdb4db;
+            --green: #bde0fe;
+            --dark-purple: #3c096c;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        .background-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            filter: blur(80px);
+            opacity: 0.5;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            animation: move 20s infinite alternate;
+        }
+
+        @keyframes move {
+            from { transform: translate(-10%, -10%); }
+            to { transform: translate(20%, 20%); }
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 2rem;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glitch-text {
+            font-family: 'Special Elite', cursive;
+            color: var(--pink);
+            text-shadow: 2px 2px #5a189a;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            2% { transform: translate(-2px, 2px); color: var(--green); }
+            4% { transform: translate(2px, -2px); color: var(--purple); }
+            6% { transform: translate(0); }
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 4px 15px rgba(255, 175, 204, 0.4);
+            margin-top: 1rem;
+        }
+
+        .btn-action:hover:not(:disabled) {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(205, 180, 219, 0.6);
+        }
+
+        .stage { display: none; }
+        .stage.active { display: block; animation: fadeIn 0.8s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .creepy-eye {
+            width: 40px; height: 20px;
+            background: white; border-radius: 50%;
+            position: relative; display: inline-block;
+            margin: 10px; overflow: hidden;
+            border: 2px solid var(--purple);
+        }
+
+        .pupil {
+            width: 12px; height: 12px;
+            background: #1a1a1a; border-radius: 50%;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .heart-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 10px; margin: 20px 0;
+        }
+
+        .heart-tile {
+            height: 60px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .heart-tile.flipped { background: var(--purple); color: white; }
+
+        #winnerModal {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.9); z-index: 100;
+            align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .modal-content {
+            background: #1a0a1f; border: 2px solid var(--pink);
+            padding: 2rem; border-radius: 1.5rem; text-align: center;
+            max-width: 320px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .final-gesture {
+            font-size: 5rem;
+            display: block;
+            margin: 1rem 0;
+            animation: bounce 1s infinite alternate;
+            filter: drop-shadow(0 0 10px var(--pink));
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-10px) scale(1.1); }
+        }
+
+        .terminal-end {
+            color: #ff4d4d;
+            font-family: monospace;
+            font-size: 0.8rem;
+            margin-top: 2rem;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-blobs">
+        <div class="blob" style="width: 450px; height: 450px; background: var(--pink); top: -15%; left: -10%;"></div>
+        <div class="blob" style="width: 400px; height: 400px; background: var(--purple); bottom: -10%; right: -5%; animation-delay: -5s;"></div>
+        <div class="blob" style="width: 350px; height: 350px; background: #95d5b2; top: 30%; left: 55%; animation-delay: -10s;"></div>
+    </div>
+
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Winner Modal -->
+    <div id="winnerModal">
+        <div class="modal-content">
+            <div class="glitch-text text-2xl mb-2">ACCESS GRANTED</div>
+            <p class="text-pink-100 mb-4">You've found the triple truth. 🖤</p>
+            <div class="flex justify-center space-x-2 mb-4 text-2xl">
+                <span>🖕</span><span>🖕</span><span>🖕</span>
+            </div>
+            <button class="btn-action w-full" onclick="closeModal()">Final Transmission</button>
+        </div>
+    </div>
+
+    <div class="glass-panel" id="mainPanel">
+        <!-- STAGE 0: THE GREETING -->
+        <div class="stage active" id="stage0">
+            <div class="glitch-text text-3xl mb-4">SYSTEM BOOT</div>
+            <p class="text-gray-300 mb-6">Tristin's digital ritual for Kristen. <br> Find 3 hidden gestures to break the seal.</p>
+            <div class="flex justify-center mb-4">
+                <div class="creepy-eye"><div class="pupil"></div></div>
+                <div class="creepy-eye"><div class="pupil"></div></div>
+            </div>
+            <button class="btn-action" onclick="nextStage(1)">Initiate Pulse</button>
+        </div>
+
+        <!-- STAGE 1: THE PUZZLE -->
+        <div class="stage" id="stage1">
+            <h2 class="text-xl text-purple-200 mb-2">The Ritual</h2>
+            <p class="text-sm text-gray-400 mb-4">Match three 🖕 symbols to proceed.</p>
+            <div class="heart-grid" id="heartGrid"></div>
+        </div>
+
+        <!-- STAGE 2: THE CHALLENGE -->
+        <div class="stage" id="stage2">
+            <div class="glitch-text text-2xl mb-4">CALIBRATING...</div>
+            <p class="text-gray-300 mb-6">Are you ready for the final transmission, Kristen?</p>
+            <div class="space-y-3">
+                <button class="w-full p-3 rounded-xl border border-pink-400/30 hover:bg-pink-500/10 transition" onclick="nextStage(3)">Yes, Feed Me</button>
+                <button class="w-full p-3 rounded-xl border border-pink-400/30 hover:bg-pink-500/10 transition" onclick="nextStage(3)">No (Yes)</button>
+            </div>
+        </div>
+
+        <!-- STAGE 3: THE ENDING -->
+        <div class="stage" id="stage3">
+            <div class="final-gesture">🖕</div>
+            <div class="glitch-text text-3xl mb-4">TRANSMISSION COMPLETE</div>
+            <p class="text-purple-100 text-lg leading-relaxed">
+                Kristen, <br>
+                You are my favorite glitch in this boring world.
+            </p>
+            <p class="mt-4 text-gray-400 text-sm italic">You're stuck with me. Forever.</p>
+            
+            <button id="finalBtn" class="btn-action mt-6" onclick="shutdown()">Terminate Connection</button>
+            
+            <div class="terminal-end">
+                [SYSTEM STATUS: LOCKED]<br>
+                [USER: KRISTEN_TRISTIN_LINK_STABLE]
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStage = 0;
+        const stages = document.querySelectorAll('.stage');
+        let particles = [];
+        let modalShown = false;
+
+        function nextStage(index) {
+            stages[currentStage].classList.remove('active');
+            currentStage = index;
+            stages[currentStage].classList.add('active');
+            if(index === 1) initPuzzle();
+        }
+
+        function closeModal() {
+            document.getElementById('winnerModal').style.display = 'none';
+        }
+
+        function shutdown() {
+            const panel = document.getElementById('mainPanel');
+            panel.style.transition = 'all 1s ease';
+            panel.style.opacity = '0';
+            panel.style.transform = 'scale(0.8) translateY(20px)';
+            document.getElementById('finalBtn').disabled = true;
+            document.getElementById('finalBtn').innerText = "LINK PERMANENT";
+            
+            const background = document.querySelector('.background-blobs');
+            background.style.transition = 'filter 2s ease';
+            background.style.filter = 'blur(150px) saturate(0)';
+            
+            for(let i=0; i<40; i++) {
+                particles.push(new Particle(window.innerWidth/2, window.innerHeight/2, true));
+            }
+        }
+
+        function initPuzzle() {
+            const grid = document.getElementById('heartGrid');
+            // We need 3 pairs of middle fingers to satisfy the requirement
+            const targetIcon = '🖕';
+            const fillers = ['💀', '🌿', '👁️', '🎀', '🧪'];
+            
+            // Create 3 pairs of the gesture and one pair each of the fillers to fill the 12-slot grid
+            let deck = [targetIcon, targetIcon, targetIcon, targetIcon, targetIcon, targetIcon];
+            fillers.forEach(f => {
+                if(deck.length < 12) {
+                    deck.push(f);
+                    deck.push(f);
+                }
+            });
+            
+            const pairs = deck.sort(() => Math.random() - 0.5);
+            let flipped = [];
+            let gestureMatches = 0;
+            let totalMatches = 0;
+
+            grid.innerHTML = '';
+            pairs.forEach(icon => {
+                const tile = document.createElement('div');
+                tile.className = 'heart-tile';
+                tile.dataset.icon = icon;
+                tile.innerHTML = '?';
+                tile.onclick = () => {
+                    if (flipped.length < 2 && !tile.classList.contains('flipped')) {
+                        tile.classList.add('flipped');
+                        tile.innerHTML = icon;
+                        flipped.push(tile);
+
+                        if (flipped.length === 2) {
+                            if (flipped[0].dataset.icon === flipped[1].dataset.icon) {
+                                totalMatches++;
+                                if (flipped[0].dataset.icon === targetIcon) {
+                                    gestureMatches++;
+                                }
+                                flipped = [];
+                                
+                                // Winner box specifically after 3 gesture matches
+                                if (gestureMatches === 3 && !modalShown) {
+                                    document.getElementById('winnerModal').style.display = 'flex';
+                                    modalShown = true;
+                                    // Move to stage 2 automatically after they close the modal
+                                    const oldClose = closeModal;
+                                    window.closeModal = () => {
+                                        oldClose();
+                                        nextStage(2);
+                                    };
+                                }
+                            } else {
+                                setTimeout(() => {
+                                    flipped.forEach(t => {
+                                        t.classList.remove('flipped');
+                                        t.innerHTML = '?';
+                                    });
+                                    flipped = [];
+                                }, 600);
+                            }
+                        }
+                    }
+                };
+                grid.appendChild(tile);
+            });
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            const pupils = document.querySelectorAll('.pupil');
+            pupils.forEach(pupil => {
+                const rect = pupil.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                const angle = Math.atan2(e.pageY - y, e.pageX - x);
+                const dist = Math.min(6, Math.hypot(e.pageX - x, e.pageY - y) / 15);
+                pupil.style.transform = `translate(calc(-50% + ${Math.cos(angle)*dist}px), calc(-50% + ${Math.sin(angle)*dist}px))`;
+            });
+        });
+
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+
+        class Particle {
+            constructor(x, y, isFinal = false) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 4 - 2;
+                this.speedY = Math.random() * 4 - 2;
+                this.life = 1;
+                this.isFinal = isFinal;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                this.life -= this.isFinal ? 0.005 : 0.015;
+            }
+            draw() {
+                ctx.globalAlpha = this.life;
+                if(this.isFinal) {
+                    ctx.font = '24px serif';
+                    ctx.fillText('🖕', this.x, this.y);
+                } else {
+                    ctx.fillStyle = Math.random() > 0.5 ? '#ffafcc' : '#cdb4db';
+                    ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill();
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (Math.random() > 0.9) particles.push(new Particle(Math.random()*canvas.width, Math.random()*canvas.height));
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
+
